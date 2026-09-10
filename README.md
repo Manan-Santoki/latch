@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="logo.svg" alt="Latch" width="104" height="104" />
+</p>
+
 # Latch
 
 > Surface recent Gmail verification codes and links on the site where you need them.

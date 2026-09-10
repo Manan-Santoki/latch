@@ -19,6 +19,9 @@ web-ext.config.ts
 .env
 .env.local
 
+# Draft logo explorations (not pushed; move the chosen one out to keep it)
+logos/
+
 # Test / build artifacts
 coverage
 playwright-report
