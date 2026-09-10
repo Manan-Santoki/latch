@@ -1,0 +1,267 @@
+.latch-options {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+}
+
+.latch-options-header {
+  margin-bottom: 20px;
+}
+
+.latch-title-main {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 650;
+}
+
+.latch-card-section {
+  background: var(--latch-bg);
+  border: 1px solid var(--latch-border);
+  border-radius: var(--latch-radius);
+  padding: 18px 20px;
+  margin-bottom: 16px;
+}
+
+.latch-h2 {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--latch-text-muted);
+}
+
+.latch-body {
+  margin: 0 0 10px;
+  font-size: 14px;
+}
+
+.latch-hint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--latch-text-muted);
+}
+
+.latch-warn {
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: var(--latch-warn);
+}
+
+.latch-error {
+  margin: 0;
+  font-size: 13px;
+  color: var(--latch-error);
+}
+
+.latch-indent {
+  margin-top: -6px;
+  margin-bottom: 12px;
+  padding-left: 26px;
+}
+
+.latch-label {
+  display: block;
+  margin: 12px 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--latch-text-muted);
+}
+
+.latch-button-row {
+  display: flex;
+  gap: 8px;
+}
+
+/* Buttons */
+
+.latch-btn {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: var(--latch-radius-sm);
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.latch-btn-sm {
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.latch-btn-primary {
+  background: var(--latch-accent);
+  color: var(--latch-accent-text);
+}
+
+.latch-btn-primary:hover {
+  background: var(--latch-accent-hover);
+}
+
+.latch-btn-secondary {
+  background: var(--latch-secondary-bg);
+  color: var(--latch-secondary-text);
+  border-color: var(--latch-border);
+}
+
+.latch-btn-secondary:hover {
+  background: var(--latch-secondary-bg-hover);
+}
+
+.latch-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Behavior */
+
+.latch-behavior-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.latch-check-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  padding: 6px 0;
+  cursor: pointer;
+}
+
+.latch-select-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  max-width: 320px;
+}
+
+.latch-select-label {
+  font-size: 14px;
+}
+
+.latch-select-row select {
+  padding: 6px 8px;
+  border: 1px solid var(--latch-border);
+  border-radius: var(--latch-radius-sm);
+  background: var(--latch-bg);
+  color: var(--latch-text);
+}
+
+/* Site access */
+
+.latch-fieldset {
+  border: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.latch-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.latch-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.latch-origin-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.latch-origin-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  background: var(--latch-bg-raised);
+  border: 1px solid var(--latch-border);
+  border-radius: var(--latch-radius-sm);
+}
+
+.latch-origin-value {
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Privacy */
+
+.latch-privacy-list {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Diagnostics */
+
+.latch-diagnostics {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.latch-diagnostics-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--latch-divider);
+  font-size: 13px;
+}
+
+.latch-diagnostics-row:last-child {
+  border-bottom: none;
+}
+
+.latch-diagnostics-row dt {
+  color: var(--latch-text-muted);
+}
+
+.latch-diagnostics-row dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .latch-options {
+    padding: 20px 14px 48px;
+  }
+
+  .latch-select-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

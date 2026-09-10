@@ -1,7 +1,8 @@
 # Progress
 
 ## Current phase
-M1 — parallel pure-logic + UI modules (security/MIME, classifier/extractors, matching, overlay UI).
+M4 — Gmail integration (auth, incremental sync, MIME/offscreen parsing, background pipeline).
+M3 (Google OAuth setup) runs jointly with the user in parallel.
 
 ## Completed
 - [x] **M0 Foundation** — WXT + React + TS scaffold; product name **Latch**.
@@ -16,11 +17,19 @@ M1 — parallel pure-logic + UI modules (security/MIME, classifier/extractors, m
   - Toolchain: Vitest 5 (WxtVitest fake browser), Biome, Playwright. install/typecheck/
     test(6 pass)/build/zip all green. Committed.
 
+- [x] **M1** — pure-logic + UI modules (4 parallel agents): security/MIME, classifier/
+  extractors, domain/service matching, overlay UI. 214 tests, tsc + biome clean.
+- [x] **M2 — importable checkpoint** (user hand-tested): secure extension-origin iframe
+  injection boundary (zod-free 1.8 kB injector), 3-mode site-permission system, validated
+  background message router, offscreen clipboard copy-by-id, overlay wired to real
+  messaging, dev fake-action harness, real popup + options pages. Overlay render fixed
+  (transparent on any page: card fills the iframe, iframe carries corners + shadow).
+
 ## In progress
-- [ ] M1 module: security URL policy + Gmail MIME parsing (§6.4, §10, §25)
-- [ ] M1 module: verification classifier + code/link extractors (§11–§13, §16)
-- [ ] M1 module: domain/service matching (§14, §26)
-- [ ] M1 module: overlay UI cards + extension overlay page (§3.2–§3.5, §17)
+- [ ] M4: Gmail auth (chrome.identity), incremental history.list sync + error/backoff
+- [ ] M4: offscreen DOM_PARSER for email HTML (§10.2, §29)
+- [ ] M4: background pipeline (sync → parse → classify → extract → match → route)
+- [ ] M3: Google OAuth client setup (jointly with user)
 
 ## Blocked
 - None. (M3 Gmail OAuth requires a Google Cloud project + client ID — set up jointly with

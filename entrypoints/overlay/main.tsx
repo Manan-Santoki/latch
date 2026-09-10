@@ -1,5 +1,6 @@
-import type { OverlayFrameMessage } from '@/src/messaging/protocol';
-import { OVERLAY_FRAME_SOURCE } from '@/src/messaging/protocol';
+import { sendMessage } from '@/src/messaging/client';
+import type { OverlayFrameMessage } from '@/src/messaging/overlay-channel';
+import { OVERLAY_FRAME_SOURCE } from '@/src/messaging/overlay-channel';
 import { VerificationCard } from '@/src/ui/VerificationCard';
 import type { VerificationActionView } from '@/src/verification/types';
 import { useEffect, useRef, useState } from 'react';
@@ -95,10 +96,17 @@ const DEMO_FIXTURES: Record<string, VerificationActionView> = {
 // Non-null: 'code' is always present in DEMO_FIXTURES, guaranteeing a fallback.
 const DEFAULT_DEMO_FIXTURE: VerificationActionView = DEMO_FIXTURES.code as VerificationActionView;
 
+/** Demo mode (standalone viewing) when a `?demo=` param is present. */
+function demoParam(): string | null {
+  return new URLSearchParams(window.location.search).get('demo');
+}
+
 function readDemoFixture(): VerificationActionView {
-  const param = new URLSearchParams(window.location.search).get('demo') ?? 'code';
+  const param = demoParam() ?? 'code';
   return DEMO_FIXTURES[param] ?? DEFAULT_DEMO_FIXTURE;
 }
+
+const IS_DEMO = demoParam() !== null;
 
 /** Post only a height — never a secret payload — to the injected wrapper (§17.1). */
 function postResize(height: number) {
@@ -127,32 +135,50 @@ function postDismissed() {
 }
 
 function OverlayApp() {
-  const [action, setAction] = useState<VerificationActionView | null>(readDemoFixture);
+  const [action, setAction] = useState<VerificationActionView | null>(
+    IS_DEMO ? readDemoFixture() : null,
+  );
   const rootRef = useRef<HTMLDivElement | null>(null);
 
-  // TODO(orchestrator): replace mock with GET_ACTIVE_ACTION message + COPY/OPEN/DISMISS_ACTION via background
+  // In the real extension, fetch the action assigned to this tab from the
+  // background. The wrapper reloads this page (re-setting src) to refresh, so a
+  // one-shot fetch on mount is sufficient. If there is nothing to show, dismiss.
+  useEffect(() => {
+    if (IS_DEMO) return;
+    let cancelled = false;
+    void sendMessage({ type: 'GET_ACTIVE_ACTION' }).then((view) => {
+      if (cancelled) return;
+      if (view) setAction(view);
+      else postDismissed();
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   function handleCopy(id: string) {
-    console.info('[overlay] copy', id);
+    if (IS_DEMO) return;
+    void sendMessage({ type: 'COPY_ACTION', actionId: id });
   }
 
   function handleOpen(id: string) {
-    console.info('[overlay] open', id);
+    if (IS_DEMO) return;
+    void sendMessage({ type: 'OPEN_ACTION', actionId: id });
   }
 
   function handleDismiss(id: string) {
-    console.info('[overlay] dismiss', id);
+    if (!IS_DEMO) void sendMessage({ type: 'DISMISS_ACTION', actionId: id });
     setAction(null);
     postDismissed();
   }
 
   // Escape dismisses the overlay (§17.2). Wired here, not inside the pure card,
   // so the card component stays free of global document listeners.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: handleDismiss closes only over stable values; re-run on action change.
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape' && action) {
-        console.info('[overlay] dismiss', action.id);
-        setAction(null);
-        postDismissed();
+        handleDismiss(action.id);
       }
     }
     document.addEventListener('keydown', onKeyDown);
@@ -166,9 +192,11 @@ function OverlayApp() {
     if (!el) return;
     postResize(el.offsetHeight);
     if (typeof ResizeObserver === 'undefined') return;
-    const observer = new ResizeObserver((entries) => {
-      const entry = entries[0];
-      if (entry) postResize(entry.contentRect.height);
+    // Report the border-box height (offsetHeight), not contentRect.height — the
+    // root has padding for the card's shadow, and using the content box would
+    // size the iframe too short and produce a scrollbar.
+    const observer = new ResizeObserver(() => {
+      postResize(el.offsetHeight);
     });
     observer.observe(el);
     return () => observer.disconnect();
@@ -187,6 +215,8 @@ function OverlayApp() {
     </div>
   );
 }
+
+if (IS_DEMO) document.body.classList.add('latch-demo');
 
 const rootEl = document.getElementById('root');
 if (rootEl) {

@@ -1,10 +1,13 @@
 /**
- * Latch — standalone overlay page shell (§17.1). The iframe floats over the
- * host page, so the page background stays transparent and the card itself
- * supplies the only opaque surface. Positioning here mirrors the top-right
- * fixed placement the injected wrapper gives the iframe, with the same
- * narrow-window gutter fallback, so the page also looks right when opened
- * directly (e.g. this dev/demo harness).
+ * Latch — overlay page shell (§17.1).
+ *
+ * Two modes:
+ *  - Embedded (default): the injected wrapper positions the iframe top-right in
+ *    the host page, sizes it to our content, and carries the rounded corners +
+ *    drop shadow. So the card fills the iframe edge-to-edge and square; the
+ *    iframe's border-radius clips its (opaque) canvas, so no canvas shows.
+ *  - Demo (`?demo=…`, body.latch-demo): the card floats top-right over a
+ *    full-height page (no wrapper iframe), so it supplies its own radius/shadow.
  */
 
 html,
@@ -12,25 +15,39 @@ body {
   margin: 0;
   padding: 0;
   background: transparent;
-  color-scheme: light dark;
-}
-
-body {
-  min-height: 100vh;
+  /* The wrapper sizes the iframe to our content; never scroll inside it. */
+  overflow: hidden;
 }
 
 .latch-overlay-root {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Embedded: card fills the iframe; the iframe supplies corners + shadow. */
+body:not(.latch-demo) .latch-card {
+  max-width: none;
+  border-radius: 0;
+  border: 0;
+  box-shadow: none;
+}
+
+/* Demo/standalone preview: float the card top-right with its own styling. */
+body.latch-demo {
+  min-height: 100vh;
+}
+
+body.latch-demo .latch-overlay-root {
   position: fixed;
   top: 16px;
   right: 16px;
   width: 360px;
   max-width: calc(100vw - 32px);
-  display: flex;
-  justify-content: flex-end;
+  padding: 0;
 }
 
 @media (max-width: 400px) {
-  .latch-overlay-root {
+  body.latch-demo .latch-overlay-root {
     left: 12px;
     right: 12px;
     width: auto;

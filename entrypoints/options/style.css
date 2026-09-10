@@ -1,5 +1,5 @@
 /**
- * Latch — popup base reset & design tokens.
+ * Latch — options page base reset & design tokens.
  *
  * Light palette on bare :root; dark values layered behind prefers-color-scheme
  * and re-asserted behind an explicit data-theme so a stored Appearance choice
@@ -9,10 +9,11 @@
 :root {
   color-scheme: light dark;
 
-  --latch-radius: 10px;
+  --latch-radius: 12px;
   --latch-radius-sm: 8px;
 
   --latch-bg: #ffffff;
+  --latch-bg-page: #f8fafc;
   --latch-bg-raised: #f8fafc;
   --latch-border: #e2e8f0;
   --latch-divider: #e2e8f0;
@@ -36,6 +37,7 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --latch-bg: #131826;
+    --latch-bg-page: #0b0f1a;
     --latch-bg-raised: #1c2333;
     --latch-border: #2f3a52;
     --latch-divider: #2f3a52;
@@ -59,6 +61,7 @@
 
 :root[data-theme="dark"] {
   --latch-bg: #131826;
+  --latch-bg-page: #0b0f1a;
   --latch-bg-raised: #1c2333;
   --latch-border: #2f3a52;
   --latch-divider: #2f3a52;
@@ -81,6 +84,7 @@
 
 :root[data-theme="light"] {
   --latch-bg: #ffffff;
+  --latch-bg-page: #f8fafc;
   --latch-bg-raised: #f8fafc;
   --latch-border: #e2e8f0;
   --latch-divider: #e2e8f0;
@@ -107,11 +111,11 @@
 
 body {
   margin: 0;
-  background: var(--latch-bg);
+  background: var(--latch-bg-page);
   color: var(--latch-text);
   font-family: system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
-  font-size: 13px;
-  line-height: 1.45;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 button,

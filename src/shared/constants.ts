@@ -64,6 +64,8 @@ export const LOCAL_KEYS = {
 /** chrome.storage.session keys (sensitive, ephemeral, §6.2). */
 export const SESSION_KEYS = {
   activeActions: 'latch:activeActions',
+  /** Map of tabId → actionId currently surfaced in that tab (non-secret ids). */
+  tabActions: 'latch:tabActions',
 } as const;
 
 /** Extension display name used in UI surfaces. */

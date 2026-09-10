@@ -27,3 +27,14 @@ export async function setActiveActions(actions: VerificationAction[]): Promise<v
 export async function clearActiveActions(): Promise<void> {
   await chrome.storage.session.remove(SESSION_KEYS.activeActions);
 }
+
+/** tabId → actionId map for which action is currently surfaced in each tab. */
+export async function getTabActionMap(): Promise<Record<string, string>> {
+  const record = await chrome.storage.session.get(SESSION_KEYS.tabActions);
+  const raw = record[SESSION_KEYS.tabActions];
+  return raw && typeof raw === 'object' ? (raw as Record<string, string>) : {};
+}
+
+export async function setTabActionMap(map: Record<string, string>): Promise<void> {
+  await chrome.storage.session.set({ [SESSION_KEYS.tabActions]: map });
+}

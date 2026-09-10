@@ -81,13 +81,12 @@ export const extensionMessageSchema = z.discriminatedUnion('type', [
   }),
 ]);
 
-// ─── Overlay iframe ⇄ injected wrapper channel ───────────────────────────────
-// Posted via window.postMessage between the extension-origin overlay iframe and
-// the injected host-page wrapper. Carries ONLY layout/lifecycle info — never a
-// code, URL, or any secret (§17.1, §18).
-
-export const OVERLAY_FRAME_SOURCE = 'latch:overlay-frame';
-
-export type OverlayFrameMessage =
-  | { source: typeof OVERLAY_FRAME_SOURCE; kind: 'resize'; height: number }
-  | { source: typeof OVERLAY_FRAME_SOURCE; kind: 'dismissed' };
+// The overlay cross-frame channel lives in a zod-free module so the injected
+// wrapper stays tiny (§39). Re-exported here for convenience; the injector must
+// import it from './overlay-channel' directly to avoid pulling in zod.
+export {
+  OVERLAY_FRAME_SOURCE,
+  OVERLAY_CONTROL_SOURCE,
+  isOverlayControlMessage,
+} from './overlay-channel';
+export type { OverlayFrameMessage, OverlayControlMessage } from './overlay-channel';
