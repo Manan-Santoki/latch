@@ -6,21 +6,20 @@ import {
   requestAllHttps,
   requestOrigin,
 } from '@/src/browser/permissions';
-import { FIXTURE_IDS, type FixtureId } from '@/src/dev/fixtures';
 import { sendMessage } from '@/src/messaging/client';
-import { PRODUCT_NAME } from '@/src/shared/constants';
 import { receivedAgo } from '@/src/shared/time';
 import type { ConnectionStatus, SiteAccessMode } from '@/src/shared/types';
 import { DEFAULT_SETTINGS, type Settings } from '@/src/storage/schemas';
 import type { VerificationActionView } from '@/src/verification/types';
-import { useEffect, useState } from 'react';
+import { BarChart3, Globe, Mail, Settings as SettingsIcon, Zap } from 'lucide-react';
+import { type ReactNode, useEffect, useState } from 'react';
 import './App.css';
 
 type LoadStatus = 'loading' | 'ready' | 'error';
 
 const ALL_HTTPS_PATTERN = 'https://*/*';
 
-/** `receivedAgo` always prefixes "Received " — strip it for label contexts like "Last Gmail check: …". */
+/** `receivedAgo` always prefixes "Received " — strip it for label contexts. */
 function relativeLabel(ms: number): string {
   return receivedAgo(ms).replace(/^Received /, '');
 }
@@ -53,11 +52,7 @@ function openErrorLabel(reason: string | undefined): string {
   }
 }
 
-function fixtureLabel(id: FixtureId): string {
-  return id.charAt(0).toUpperCase() + id.slice(1);
-}
-
-/** Turn a granted match pattern ("https://github.com/*") back into a plain origin for display. */
+/** Turn a granted match pattern ("https://github.com/*") back into a plain origin. */
 function patternToOrigin(pattern: string): string {
   return pattern.replace(/\/\*$/, '');
 }
@@ -72,6 +67,20 @@ async function getCurrentTabOrigin(): Promise<string | null> {
   } catch {
     return null;
   }
+}
+
+function Card(props: { icon: ReactNode; label: string; children: ReactNode }) {
+  return (
+    <section className="latch-card">
+      <div className="latch-card-icon" aria-hidden="true">
+        {props.icon}
+      </div>
+      <div className="latch-card-body">
+        <h2 className="latch-card-label">{props.label}</h2>
+        {props.children}
+      </div>
+    </section>
+  );
 }
 
 function App() {
@@ -92,9 +101,6 @@ function App() {
   const [grantedOrigins, setGrantedOrigins] = useState<string[]>([]);
   const [allHttpsGranted, setAllHttpsGranted] = useState(false);
   const [currentOriginGranted, setCurrentOriginGranted] = useState(false);
-
-  const [devBusy, setDevBusy] = useState<FixtureId | null>(null);
-  const [devError, setDevError] = useState<string | null>(null);
 
   async function loadConnection() {
     setConnectionStatus('loading');
@@ -142,11 +148,11 @@ function App() {
       setAllHttpsGranted(allHttps);
       setCurrentOriginGranted(current);
     } catch {
-      // Leave last-known permission state in place; controls simply won't update.
+      // Leave last-known permission state in place.
     }
   }
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: run once on mount; the loader functions above only close over stable setState setters and module-level helpers.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: run once on mount; loaders only close over stable setters + module helpers.
   useEffect(() => {
     void loadConnection();
     void loadActions();
@@ -167,6 +173,10 @@ function App() {
       document.documentElement.dataset.theme = settings.appearance;
     }
   }, [settings.appearance]);
+
+  function openOptions() {
+    chrome.runtime.openOptionsPage();
+  }
 
   async function handleConnect() {
     try {
@@ -200,9 +210,7 @@ function App() {
           return next;
         });
         setCopiedId(id);
-        window.setTimeout(() => {
-          setCopiedId((cur) => (cur === id ? null : cur));
-        }, 1500);
+        window.setTimeout(() => setCopiedId((cur) => (cur === id ? null : cur)), 1500);
       } else {
         setActionError((e) => ({ ...e, [id]: 'Copy failed.' }));
       }
@@ -253,7 +261,7 @@ function App() {
         granted = false;
       }
       setAllHttpsGranted(granted);
-      if (!granted) return; // user denied — leave the current mode/radio as-is
+      if (!granted) return; // user denied — leave the current mode as-is
     }
     try {
       const next = await sendMessage({ type: 'SET_SITE_MODE', mode });
@@ -282,55 +290,55 @@ function App() {
     }
   }
 
-  async function handleInject(fixtureId: FixtureId) {
-    setDevBusy(fixtureId);
-    setDevError(null);
-    try {
-      const result = await sendMessage({ type: 'DEV_INJECT_FAKE_ACTION', fixtureId });
-      if (result.ok) {
-        window.close();
-        return;
-      }
-      setDevError(result.error ?? 'Inject failed.');
-    } catch {
-      setDevError('Inject failed.');
-    } finally {
-      setDevBusy(null);
-    }
-  }
-
   const visibleGrantedOrigins = grantedOrigins.filter((o) => o !== ALL_HTTPS_PATTERN);
+  const modes: { value: SiteAccessMode; label: string }[] = [
+    { value: 'on_click', label: 'On click only' },
+    { value: 'selected', label: 'Selected sites' },
+    { value: 'all_https', label: 'All HTTPS sites' },
+  ];
 
   return (
     <main className="latch-popup">
-      <header className="latch-section latch-header">
-        <h1 className="latch-title-main">{PRODUCT_NAME}</h1>
-        <p className="latch-tagline">
-          Recent Gmail verification codes and links, on the site where you need them.
-        </p>
+      <header className="latch-topbar">
+        <div className="latch-brand">
+          <img className="latch-logo" src="/icon/48.png" alt="" width="28" height="28" />
+          <div>
+            <h1 className="latch-wordmark">Latch</h1>
+            <p className="latch-tagline">
+              Gmail verification codes &amp; links, where you need them.
+            </p>
+          </div>
+        </div>
+        <button type="button" className="latch-gear" aria-label="Settings" onClick={openOptions}>
+          <SettingsIcon size={17} strokeWidth={1.75} aria-hidden="true" />
+        </button>
       </header>
 
-      <section className="latch-section">
-        <h2 className="latch-h2">Gmail</h2>
+      <Card icon={<Mail size={20} strokeWidth={1.75} />} label="Gmail">
         {connectionStatus === 'error' ? (
           <p className="latch-error">Unable to load Gmail status.</p>
         ) : connectionStatus === 'loading' || !connection ? (
-          <p className="latch-hint">Loading…</p>
+          <p className="latch-muted">Loading…</p>
         ) : connection.connected ? (
-          <>
-            <p className="latch-body">Connected as {connection.accountEmail ?? 'your account'}</p>
-            {connection.reauthRequired && <p className="latch-warn">Reconnect required.</p>}
+          <div className="latch-inline">
+            <div>
+              <p className="latch-line">Connected as</p>
+              <p className="latch-strong latch-truncate">
+                {connection.accountEmail ?? 'your account'}
+              </p>
+              {connection.reauthRequired && <p className="latch-warn">Reconnect required.</p>}
+            </div>
             <button
               type="button"
-              className="latch-btn latch-btn-secondary"
+              className="latch-btn latch-btn-outline"
               onClick={() => void handleDisconnect()}
             >
               Disconnect
             </button>
-          </>
+          </div>
         ) : (
-          <>
-            <p className="latch-body">Not connected</p>
+          <div className="latch-stack">
+            <p className="latch-strong">Not connected</p>
             <button
               type="button"
               className="latch-btn latch-btn-primary"
@@ -338,25 +346,26 @@ function App() {
             >
               Connect Gmail
             </button>
-            {gmailNote && <p className="latch-hint">Gmail sign-in is set up in the next step.</p>}
-          </>
+            {gmailNote && <p className="latch-muted">Gmail sign-in is set up in the next step.</p>}
+          </div>
         )}
-      </section>
+      </Card>
 
-      <section className="latch-section">
-        <h2 className="latch-h2">Active actions</h2>
+      <Card icon={<Zap size={20} strokeWidth={1.75} />} label="Active actions">
         {actionsStatus === 'error' ? (
           <p className="latch-error">Unable to load active actions.</p>
         ) : actionsStatus === 'loading' ? (
-          <p className="latch-hint">Loading…</p>
+          <p className="latch-muted">Loading…</p>
         ) : actions.length === 0 ? (
-          <p className="latch-hint">No active verification actions.</p>
+          <p className="latch-muted">No active verification actions.</p>
         ) : (
           <ul className="latch-action-list">
             {actions.map((action) => (
               <li key={action.id} className="latch-action-item" data-risk={action.risk.level}>
                 <div className="latch-action-row">
-                  <span className="latch-action-service">{action.service ?? 'Verification'}</span>
+                  <span className="latch-strong latch-truncate">
+                    {action.service ?? 'Verification'}
+                  </span>
                   <button
                     type="button"
                     className="latch-icon-btn"
@@ -382,11 +391,11 @@ function App() {
                 )}
                 {action.link && (
                   <div className="latch-action-row">
-                    <span className="latch-action-host">{action.link.hostname}</span>
+                    <span className="latch-action-host latch-truncate">{action.link.hostname}</span>
                     {action.hasOpen && (
                       <button
                         type="button"
-                        className="latch-btn latch-btn-secondary latch-btn-sm"
+                        className="latch-btn latch-btn-outline latch-btn-sm"
                         disabled={actionBusy[action.id]}
                         onClick={() => void handleOpen(action.id)}
                       >
@@ -403,79 +412,63 @@ function App() {
             ))}
           </ul>
         )}
-      </section>
+      </Card>
 
-      <section className="latch-section">
-        <h2 className="latch-h2">Site access</h2>
+      <Card icon={<Globe size={20} strokeWidth={1.75} />} label="Site access">
         {settingsStatus === 'error' ? (
           <p className="latch-error">Unable to load settings.</p>
         ) : settingsStatus === 'loading' ? (
-          <p className="latch-hint">Loading…</p>
+          <p className="latch-muted">Loading…</p>
         ) : (
           <>
-            <fieldset className="latch-fieldset">
+            <fieldset className="latch-radios">
               <legend className="latch-visually-hidden">Site access mode</legend>
-              <label className="latch-radio-label">
-                <input
-                  type="radio"
-                  name="site-mode"
-                  value="on_click"
-                  checked={settings.siteMode === 'on_click'}
-                  onChange={() => void handleModeChange('on_click')}
-                />
-                On click only
-              </label>
-              <label className="latch-radio-label">
-                <input
-                  type="radio"
-                  name="site-mode"
-                  value="selected"
-                  checked={settings.siteMode === 'selected'}
-                  onChange={() => void handleModeChange('selected')}
-                />
-                Selected sites
-              </label>
-              <label className="latch-radio-label">
-                <input
-                  type="radio"
-                  name="site-mode"
-                  value="all_https"
-                  checked={settings.siteMode === 'all_https'}
-                  onChange={() => void handleModeChange('all_https')}
-                />
-                All HTTPS sites
-              </label>
+              {modes.map((m) => (
+                <label key={m.value} className="latch-radio-label">
+                  <input
+                    type="radio"
+                    className="latch-radio"
+                    name="site-mode"
+                    value={m.value}
+                    checked={settings.siteMode === m.value}
+                    onChange={() => void handleModeChange(m.value)}
+                  />
+                  <span>{m.label}</span>
+                </label>
+              ))}
             </fieldset>
 
             {settings.siteMode === 'selected' && (
               <div className="latch-site-detail">
                 {currentOrigin ? (
                   currentOriginGranted ? (
-                    <p className="latch-hint">This site ({currentOrigin}) is already granted.</p>
+                    <p className="latch-muted">This site ({currentOrigin}) is already granted.</p>
                   ) : (
                     <button
                       type="button"
-                      className="latch-btn latch-btn-secondary latch-btn-sm"
+                      className="latch-btn latch-btn-outline latch-btn-sm"
                       onClick={() => void handleGrantCurrentSite()}
                     >
-                      Grant this site ({currentOrigin})
+                      Grant this site
                     </button>
                   )
                 ) : (
-                  <p className="latch-hint">Open a website to grant it access.</p>
+                  <p className="latch-muted">Open a website to grant it access.</p>
                 )}
 
-                <span className="latch-label">Granted sites</span>
+                <span className="latch-sublabel">Granted sites</span>
                 {visibleGrantedOrigins.length === 0 ? (
-                  <p className="latch-hint">No sites granted yet.</p>
+                  <p className="latch-muted">No sites granted yet.</p>
                 ) : (
                   <ul className="latch-origin-list">
                     {visibleGrantedOrigins.map((pattern) => (
                       <li key={pattern} className="latch-origin-item">
-                        <span className="latch-origin-value">{patternToOrigin(pattern)}</span>
+                        <span className="latch-origin-value latch-truncate">
+                          {patternToOrigin(pattern)}
+                        </span>
                         <button
                           type="button"
-                          className="latch-btn latch-btn-secondary latch-btn-sm"
+                          className="latch-btn latch-btn-outline latch-btn-sm"
                           onClick={() => void handleRemoveOrigin(pattern)}
                         >
                           Remove
@@ -492,7 +485,7 @@ function App() {
                 <p className="latch-warn">Access to all HTTPS sites isn't currently granted.</p>
                 <button
                   type="button"
-                  className="latch-btn latch-btn-secondary latch-btn-sm"
+                  className="latch-btn latch-btn-outline latch-btn-sm"
                   onClick={() => void handleModeChange('all_https')}
                 >
                   Grant access
@@ -501,37 +494,22 @@ function App() {
             )}
           </>
         )}
-      </section>
+      </Card>
 
-      <section className="latch-section">
-        <h2 className="latch-h2">Status</h2>
-        <p className="latch-body">
-          Last Gmail check:{' '}
-          {connection?.lastPollAt ? relativeLabel(connection.lastPollAt) : 'never'}
+      <Card icon={<BarChart3 size={20} strokeWidth={1.75} />} label="Status">
+        <p className="latch-line">
+          <span className="latch-muted">Last Gmail check: </span>
+          <span className="latch-strong">
+            {connection?.lastPollAt ? relativeLabel(connection.lastPollAt) : 'never'}
+          </span>
         </p>
-        <p className="latch-body">
-          Status: {connection ? connectionStateLabel(connection.state) : 'Unknown'}
+        <p className="latch-line">
+          <span className="latch-muted">Status: </span>
+          <span className="latch-accent-text">
+            {connection ? connectionStateLabel(connection.state) : 'Unknown'}
+          </span>
         </p>
-      </section>
-
-      <section className="latch-section latch-dev-section">
-        <h2 className="latch-h2">Developer</h2>
-        <p className="latch-hint">Test the overlay without Gmail.</p>
-        <div className="latch-dev-grid">
-          {FIXTURE_IDS.map((id) => (
-            <button
-              key={id}
-              type="button"
-              className="latch-btn latch-btn-secondary latch-btn-sm"
-              disabled={devBusy !== null}
-              onClick={() => void handleInject(id)}
-            >
-              {devBusy === id ? 'Injecting…' : `Inject test — ${fixtureLabel(id)}`}
-            </button>
-          ))}
-        </div>
-        {devError && <p className="latch-error">{devError}</p>}
-      </section>
+      </Card>
     </main>
   );
 }

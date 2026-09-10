@@ -1,108 +1,60 @@
 /**
- * Latch — options page base reset & design tokens.
- *
- * Light palette on bare :root; dark values layered behind prefers-color-scheme
- * and re-asserted behind an explicit data-theme so a stored Appearance choice
- * (persisted in Settings) always wins over the OS-level default.
+ * Latch — options page design tokens + base.
+ * Same minimal palette as the popup (token names kept for this page's layout).
  */
 
 :root {
-  color-scheme: light dark;
-
   --latch-radius: 12px;
   --latch-radius-sm: 8px;
 
+  --latch-bg-page: #f6f7f9;
   --latch-bg: #ffffff;
-  --latch-bg-page: #f8fafc;
-  --latch-bg-raised: #f8fafc;
-  --latch-border: #e2e8f0;
-  --latch-divider: #e2e8f0;
+  --latch-bg-raised: #f0f2f5;
+  --latch-border: #e4e7ec;
+  --latch-divider: #e8ebef;
 
-  --latch-text: #0f172a;
-  --latch-text-muted: #64748b;
+  --latch-text: #14181d;
+  --latch-text-muted: #5b6470;
 
   --latch-accent: #2563eb;
   --latch-accent-hover: #1d4ed8;
   --latch-accent-text: #ffffff;
 
-  --latch-secondary-bg: #f1f5f9;
-  --latch-secondary-bg-hover: #e2e8f0;
-  --latch-secondary-text: #0f172a;
+  --latch-secondary-bg: #f0f2f5;
+  --latch-secondary-bg-hover: #e6e9ee;
+  --latch-secondary-text: #14181d;
 
   --latch-warn: #b45309;
   --latch-error: #b91c1c;
   --latch-focus-ring: #2563eb;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --latch-bg: #131826;
-    --latch-bg-page: #0b0f1a;
-    --latch-bg-raised: #1c2333;
-    --latch-border: #2f3a52;
-    --latch-divider: #2f3a52;
+:root[data-theme="dark"],
+:root:not([data-theme="light"]) {
+  --latch-bg-page: #0b0e13;
+  --latch-bg: #12161d;
+  --latch-bg-raised: #191f28;
+  --latch-border: #232b36;
+  --latch-divider: #232b36;
 
-    --latch-text: #f1f5f9;
-    --latch-text-muted: #94a3b8;
-
-    --latch-accent: #4f8cff;
-    --latch-accent-hover: #6da1ff;
-    --latch-accent-text: #0b1220;
-
-    --latch-secondary-bg: #1c2333;
-    --latch-secondary-bg-hover: #2f3a52;
-    --latch-secondary-text: #f1f5f9;
-
-    --latch-warn: #fbbf24;
-    --latch-error: #fca5a5;
-    --latch-focus-ring: #6da1ff;
-  }
-}
-
-:root[data-theme="dark"] {
-  --latch-bg: #131826;
-  --latch-bg-page: #0b0f1a;
-  --latch-bg-raised: #1c2333;
-  --latch-border: #2f3a52;
-  --latch-divider: #2f3a52;
-
-  --latch-text: #f1f5f9;
-  --latch-text-muted: #94a3b8;
+  --latch-text: #e7eaee;
+  --latch-text-muted: #949ca8;
 
   --latch-accent: #4f8cff;
-  --latch-accent-hover: #6da1ff;
-  --latch-accent-text: #0b1220;
+  --latch-accent-hover: #6ea0ff;
+  --latch-accent-text: #0a0f17;
 
-  --latch-secondary-bg: #1c2333;
-  --latch-secondary-bg-hover: #2f3a52;
-  --latch-secondary-text: #f1f5f9;
+  --latch-secondary-bg: #191f28;
+  --latch-secondary-bg-hover: #222b36;
+  --latch-secondary-text: #e7eaee;
 
   --latch-warn: #fbbf24;
   --latch-error: #fca5a5;
-  --latch-focus-ring: #6da1ff;
+  --latch-focus-ring: #4f8cff;
 }
 
-:root[data-theme="light"] {
-  --latch-bg: #ffffff;
-  --latch-bg-page: #f8fafc;
-  --latch-bg-raised: #f8fafc;
-  --latch-border: #e2e8f0;
-  --latch-divider: #e2e8f0;
-
-  --latch-text: #0f172a;
-  --latch-text-muted: #64748b;
-
-  --latch-accent: #2563eb;
-  --latch-accent-hover: #1d4ed8;
-  --latch-accent-text: #ffffff;
-
-  --latch-secondary-bg: #f1f5f9;
-  --latch-secondary-bg-hover: #e2e8f0;
-  --latch-secondary-text: #0f172a;
-
-  --latch-warn: #b45309;
-  --latch-error: #b91c1c;
-  --latch-focus-ring: #2563eb;
+:root[data-theme="dark"] {
+  color-scheme: dark;
 }
 
 * {
@@ -116,6 +68,7 @@ body {
   font-family: system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
   font-size: 14px;
   line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
 
 button,
