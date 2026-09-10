@@ -1,10 +1,5 @@
+import { hostnameOnly, maskCode, sanitizeError, scrub } from '@/src/security/redaction';
 import { describe, expect, it } from 'vitest';
-import {
-  hostnameOnly,
-  maskCode,
-  sanitizeError,
-  scrub,
-} from '@/src/security/redaction';
 
 describe('redaction', () => {
   it('reduces URLs to scheme + host, dropping token-bearing path/query', () => {

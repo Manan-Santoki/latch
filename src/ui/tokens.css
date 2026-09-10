@@ -1,0 +1,151 @@
+/**
+ * Latch — overlay/popup design tokens (§17.2).
+ *
+ * Light palette lives on bare `:root`. Dark values are layered on twice:
+ * once behind `prefers-color-scheme: dark` (system default), and once behind
+ * `:root[data-theme="dark"]` (explicit app override) so a stored preference
+ * always wins over the OS setting. `:root[data-theme="light"]` re-asserts the
+ * light palette so an explicit "light" choice wins even on a dark system.
+ */
+
+:root {
+  color-scheme: light dark;
+
+  /* Shape */
+  --latch-radius: 14px;
+  --latch-radius-sm: 10px;
+  --latch-shadow: 0 12px 28px rgba(15, 23, 42, 0.18), 0 2px 8px rgba(15, 23, 42, 0.08);
+  --latch-transition-fast: 120ms ease;
+  --latch-transition: 160ms ease;
+
+  /* Surfaces */
+  --latch-bg: #ffffff;
+  --latch-bg-raised: #f8fafc;
+  --latch-code-bg: #f1f5f9;
+  --latch-border: #e2e8f0;
+  --latch-divider: #e2e8f0;
+
+  /* Text */
+  --latch-text: #0f172a;
+  --latch-text-muted: #64748b;
+
+  /* Accent / primary action */
+  --latch-accent: #2563eb;
+  --latch-accent-hover: #1d4ed8;
+  --latch-accent-text: #ffffff;
+
+  /* Secondary action */
+  --latch-secondary-bg: #f1f5f9;
+  --latch-secondary-bg-hover: #e2e8f0;
+  --latch-secondary-text: #0f172a;
+
+  /* Feedback */
+  --latch-success: #15803d;
+  --latch-success-text: #ffffff;
+  --latch-focus-ring: #2563eb;
+
+  /* Risk: caution */
+  --latch-caution-bg: #fffbeb;
+  --latch-caution-border: #f59e0b;
+  --latch-caution-text: #92400e;
+
+  /* Risk: blocked */
+  --latch-blocked-bg: #fef2f2;
+  --latch-blocked-border: #ef4444;
+  --latch-blocked-text: #991b1b;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --latch-bg: #131826;
+    --latch-bg-raised: #1c2333;
+    --latch-code-bg: #1c2333;
+    --latch-border: #2f3a52;
+    --latch-divider: #2f3a52;
+
+    --latch-text: #f1f5f9;
+    --latch-text-muted: #94a3b8;
+
+    --latch-accent: #4f8cff;
+    --latch-accent-hover: #6da1ff;
+    --latch-accent-text: #0b1220;
+
+    --latch-secondary-bg: #1c2333;
+    --latch-secondary-bg-hover: #2f3a52;
+    --latch-secondary-text: #f1f5f9;
+
+    --latch-success: #34d399;
+    --latch-success-text: #0b1220;
+    --latch-focus-ring: #6da1ff;
+
+    --latch-caution-bg: #2a2013;
+    --latch-caution-border: #d97706;
+    --latch-caution-text: #fbbf24;
+
+    --latch-blocked-bg: #2a1414;
+    --latch-blocked-border: #ef4444;
+    --latch-blocked-text: #fca5a5;
+  }
+}
+
+:root[data-theme="dark"] {
+  --latch-bg: #131826;
+  --latch-bg-raised: #1c2333;
+  --latch-code-bg: #1c2333;
+  --latch-border: #2f3a52;
+  --latch-divider: #2f3a52;
+
+  --latch-text: #f1f5f9;
+  --latch-text-muted: #94a3b8;
+
+  --latch-accent: #4f8cff;
+  --latch-accent-hover: #6da1ff;
+  --latch-accent-text: #0b1220;
+
+  --latch-secondary-bg: #1c2333;
+  --latch-secondary-bg-hover: #2f3a52;
+  --latch-secondary-text: #f1f5f9;
+
+  --latch-success: #34d399;
+  --latch-success-text: #0b1220;
+  --latch-focus-ring: #6da1ff;
+
+  --latch-caution-bg: #2a2013;
+  --latch-caution-border: #d97706;
+  --latch-caution-text: #fbbf24;
+
+  --latch-blocked-bg: #2a1414;
+  --latch-blocked-border: #ef4444;
+  --latch-blocked-text: #fca5a5;
+}
+
+:root[data-theme="light"] {
+  --latch-bg: #ffffff;
+  --latch-bg-raised: #f8fafc;
+  --latch-code-bg: #f1f5f9;
+  --latch-border: #e2e8f0;
+  --latch-divider: #e2e8f0;
+
+  --latch-text: #0f172a;
+  --latch-text-muted: #64748b;
+
+  --latch-accent: #2563eb;
+  --latch-accent-hover: #1d4ed8;
+  --latch-accent-text: #ffffff;
+
+  --latch-secondary-bg: #f1f5f9;
+  --latch-secondary-bg-hover: #e2e8f0;
+  --latch-secondary-text: #0f172a;
+
+  --latch-success: #15803d;
+  --latch-success-text: #ffffff;
+  --latch-focus-ring: #2563eb;
+
+  --latch-caution-bg: #fffbeb;
+  --latch-caution-border: #f59e0b;
+  --latch-caution-text: #92400e;
+
+  --latch-blocked-bg: #fef2f2;
+  --latch-blocked-border: #ef4444;
+  --latch-blocked-text: #991b1b;
+}

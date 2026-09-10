@@ -6,18 +6,18 @@
  * stale storage can never crash the worker.
  */
 
+import type { z } from 'zod';
 import { LOCAL_KEYS } from '../shared/constants';
 import {
   DEFAULT_GMAIL_SYNC_STATE,
   DEFAULT_SETTINGS,
-  dedupeStoreSchema,
   type DedupeEntry,
   type GmailSyncState,
   type Settings,
+  dedupeStoreSchema,
   gmailSyncStateSchema,
   settingsSchema,
 } from './schemas';
-import type { z } from 'zod';
 
 async function readValidated<S extends z.ZodTypeAny>(
   key: string,
@@ -42,16 +42,10 @@ export async function setSettings(patch: Partial<Settings>): Promise<Settings> {
 }
 
 export async function getGmailSync(): Promise<GmailSyncState> {
-  return readValidated(
-    LOCAL_KEYS.gmailSync,
-    gmailSyncStateSchema,
-    DEFAULT_GMAIL_SYNC_STATE,
-  );
+  return readValidated(LOCAL_KEYS.gmailSync, gmailSyncStateSchema, DEFAULT_GMAIL_SYNC_STATE);
 }
 
-export async function setGmailSync(
-  patch: Partial<GmailSyncState>,
-): Promise<GmailSyncState> {
+export async function setGmailSync(patch: Partial<GmailSyncState>): Promise<GmailSyncState> {
   const next = gmailSyncStateSchema.parse({ ...(await getGmailSync()), ...patch });
   await chrome.storage.local.set({ [LOCAL_KEYS.gmailSync]: next });
   return next;

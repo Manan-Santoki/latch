@@ -10,11 +10,7 @@
 
 import { z } from 'zod';
 import type { ConnectionStatus, SiteAccessMode } from '../shared/types';
-import {
-  type Settings,
-  settingsSchema,
-  siteAccessModeSchema,
-} from '../storage/schemas';
+import { type Settings, settingsSchema, siteAccessModeSchema } from '../storage/schemas';
 import type { VerificationActionView } from '../verification/types';
 
 export interface OkResult {

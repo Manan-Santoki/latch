@@ -1,0 +1,22 @@
+{
+  "id": "msg-malformed-missing-body",
+  "threadId": "thread-7",
+  "internalDate": "not-a-number",
+  "payload": {
+    "mimeType": "multipart/mixed",
+    "headers": [{ "name": "Subject", "value": "No from header, malformed data" }],
+    "parts": [
+      {
+        "partId": "0",
+        "mimeType": "text/plain",
+        "body": {
+          "data": "!!!not-valid-base64!!!"
+        }
+      },
+      {
+        "partId": "1",
+        "mimeType": "text/html"
+      }
+    ]
+  }
+}

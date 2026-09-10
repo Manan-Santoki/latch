@@ -1,0 +1,16 @@
+{
+  "id": "msg-html-only",
+  "threadId": "thread-2",
+  "internalDate": "1700000001000",
+  "payload": {
+    "mimeType": "text/html",
+    "headers": [
+      { "name": "From", "value": "\"Acme, Inc.\" <no-reply@acme.example>" },
+      { "name": "Subject", "value": "Verify your account" }
+    ],
+    "body": {
+      "size": 200,
+      "data": "PGh0bWw-PGJvZHk-PHA-Q2xpY2sgdGhlIGxpbmsgYmVsb3cgdG8gdmVyaWZ5IHlvdXIgYWNjb3VudDo8L3A-PHA-PGEgaHJlZj0iaHR0cHM6Ly9hY2NvdW50cy5leGFtcGxlLmNvbS92ZXJpZnk_dG9rZW49YWJjMTIzWFlaIj5WZXJpZnkgeW91ciBhY2NvdW50PC9hPjwvcD48c2NyaXB0PmFsZXJ0KDEpPC9zY3JpcHQ-PC9ib2R5PjwvaHRtbD4"
+    }
+  }
+}

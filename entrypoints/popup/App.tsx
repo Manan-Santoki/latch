@@ -1,34 +1,20 @@
-import { useState } from 'react';
-import reactLogo from '@/assets/react.svg';
-import wxtLogo from '/wxt.svg';
+import { PRODUCT_NAME } from '@/src/shared/constants';
 import './App.css';
 
+// Minimal placeholder popup. The full popup (connection status, active action,
+// site-access mode, diagnostics — §21) is built in M2 with the messaging client.
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <>
-      <div>
-        <a href="https://wxt.dev" target="_blank">
-          <img src={wxtLogo} className="logo" alt="WXT logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>WXT + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the WXT and React logos to learn more
+    <main className="latch-popup">
+      <h1 className="latch-popup-title">{PRODUCT_NAME}</h1>
+      <p className="latch-popup-tagline">
+        Recent Gmail verification codes and links, on the site where you need them.
       </p>
-    </>
+      <section className="latch-popup-status">
+        <span className="latch-popup-label">Gmail</span>
+        <span className="latch-popup-value">Not connected</span>
+      </section>
+    </main>
   );
 }
 

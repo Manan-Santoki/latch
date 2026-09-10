@@ -1,0 +1,33 @@
+{
+  "id": "msg-multipart-alternative",
+  "threadId": "thread-3",
+  "internalDate": "1700000002000",
+  "payload": {
+    "mimeType": "multipart/alternative",
+    "headers": [
+      { "name": "From", "value": "Alt Service <alerts@alt.example>" },
+      { "name": "Subject", "value": "Please verify" }
+    ],
+    "body": {},
+    "parts": [
+      {
+        "partId": "0",
+        "mimeType": "text/plain",
+        "headers": [{ "name": "Content-Type", "value": "text/plain; charset=UTF-8" }],
+        "body": {
+          "size": 90,
+          "data": "VmVyaWZ5IHlvdXIgYWNjb3VudDogaHR0cHM6Ly9hY2NvdW50cy5leGFtcGxlLmNvbS92ZXJpZnk_dG9rZW49YWx0LXBsYWluLTE"
+        }
+      },
+      {
+        "partId": "1",
+        "mimeType": "text/html",
+        "headers": [{ "name": "Content-Type", "value": "text/html; charset=UTF-8" }],
+        "body": {
+          "size": 120,
+          "data": "PGh0bWw-PGJvZHk-PGEgaHJlZj0iaHR0cHM6Ly9hY2NvdW50cy5leGFtcGxlLmNvbS92ZXJpZnk_dG9rZW49YWx0LWh0bWwtMSI-VmVyaWZ5IGFjY291bnQ8L2E-PC9ib2R5PjwvaHRtbD4"
+        }
+      }
+    ]
+  }
+}

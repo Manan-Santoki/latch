@@ -1,0 +1,40 @@
+{
+  "id": "msg-multipart-mixed",
+  "threadId": "thread-4",
+  "internalDate": "1700000003000",
+  "payload": {
+    "mimeType": "multipart/mixed",
+    "headers": [
+      { "name": "From", "value": "Mixed Service <no-reply@mixed.example>" },
+      { "name": "Subject", "value": "One-time code" }
+    ],
+    "body": {},
+    "parts": [
+      {
+        "partId": "0",
+        "mimeType": "text/plain",
+        "body": {
+          "size": 40,
+          "data": "WW91ciBvbmUtdGltZSBjb2RlIGlzIDExODI3My4"
+        }
+      },
+      {
+        "partId": "1",
+        "mimeType": "text/html",
+        "body": {
+          "size": 80,
+          "data": "PGh0bWw-PGJvZHk-PHA-WW91ciBvbmUtdGltZSBjb2RlIGlzIDxiPjExODI3MzwvYj4uPC9wPjwvYm9keT48L2h0bWw-"
+        }
+      },
+      {
+        "partId": "2",
+        "mimeType": "image/png",
+        "filename": "logo.png",
+        "body": {
+          "size": 5000,
+          "attachmentId": "att-1"
+        }
+      }
+    ]
+  }
+}

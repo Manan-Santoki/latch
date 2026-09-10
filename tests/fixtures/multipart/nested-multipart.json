@@ -1,0 +1,47 @@
+{
+  "id": "msg-nested-multipart",
+  "threadId": "thread-5",
+  "internalDate": "1700000004000",
+  "payload": {
+    "mimeType": "multipart/mixed",
+    "headers": [
+      { "name": "From", "value": "Nested Service <hello@nested.example>" },
+      { "name": "Subject", "value": "Confirm your email" }
+    ],
+    "body": {},
+    "parts": [
+      {
+        "partId": "0",
+        "mimeType": "multipart/alternative",
+        "body": {},
+        "parts": [
+          {
+            "partId": "0.0",
+            "mimeType": "text/plain",
+            "body": {
+              "size": 70,
+              "data": "TmVzdGVkIHBsYWluIHRleHQgcGFydDogY29uZmlybSBhdCBodHRwczovL25lc3RlZC5leGFtcGxlLmNvbS9jb25maXJtP3g9MQ"
+            }
+          },
+          {
+            "partId": "0.1",
+            "mimeType": "text/html",
+            "body": {
+              "size": 90,
+              "data": "PGh0bWw-PGJvZHk-PGEgaHJlZj0iaHR0cHM6Ly9uZXN0ZWQuZXhhbXBsZS5jb20vY29uZmlybT94PTEiPkNvbmZpcm08L2E-PC9ib2R5PjwvaHRtbD4"
+            }
+          }
+        ]
+      },
+      {
+        "partId": "1",
+        "mimeType": "application/pdf",
+        "filename": "receipt.pdf",
+        "body": {
+          "size": 9000,
+          "attachmentId": "att-nested-1"
+        }
+      }
+    ]
+  }
+}

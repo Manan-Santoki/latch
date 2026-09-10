@@ -1,0 +1,46 @@
+{
+  "id": "msg-duplicate-html-plain",
+  "threadId": "thread-8",
+  "internalDate": "1700000006000",
+  "payload": {
+    "mimeType": "multipart/mixed",
+    "headers": [
+      { "name": "From", "value": "Dup Service <dup@dup.example>" },
+      { "name": "Subject", "value": "Duplicate content test" }
+    ],
+    "body": {},
+    "parts": [
+      {
+        "partId": "0",
+        "mimeType": "multipart/alternative",
+        "body": {},
+        "parts": [
+          {
+            "partId": "0.0",
+            "mimeType": "text/plain",
+            "body": {
+              "size": 50,
+              "data": "RHVwbGljYXRlIHBsYWluIHBhcnQgQS4gQ29kZTogNTU5OTExLg"
+            }
+          },
+          {
+            "partId": "0.1",
+            "mimeType": "text/html",
+            "body": {
+              "size": 70,
+              "data": "PGh0bWw-PGJvZHk-RHVwbGljYXRlIGh0bWwgcGFydC4gQ29kZTogPGI-NTU5OTExPC9iPjwvYm9keT48L2h0bWw-"
+            }
+          }
+        ]
+      },
+      {
+        "partId": "1",
+        "mimeType": "text/plain",
+        "body": {
+          "size": 50,
+          "data": "RHVwbGljYXRlIHBsYWluIHBhcnQgQi4gQ29kZTogNTU5OTExLg"
+        }
+      }
+    ]
+  }
+}

@@ -17,8 +17,7 @@ const MANIFEST_KEY =
 // (not a secret). Set WXT_GOOGLE_CLIENT_ID in .env to override the placeholder.
 // Wired to the real value during M3 OAuth setup.
 const GOOGLE_CLIENT_ID =
-  process.env.WXT_GOOGLE_CLIENT_ID ??
-  'PLACEHOLDER_REPLACE_IN_M3.apps.googleusercontent.com';
+  process.env.WXT_GOOGLE_CLIENT_ID ?? 'PLACEHOLDER_REPLACE_IN_M3.apps.googleusercontent.com';
 
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
@@ -28,14 +27,7 @@ export default defineConfig({
       'Surface recent Gmail verification codes and links on the site where you need them.',
     minimum_chrome_version: '116',
     key: MANIFEST_KEY,
-    permissions: [
-      'identity',
-      'storage',
-      'alarms',
-      'scripting',
-      'offscreen',
-      'activeTab',
-    ],
+    permissions: ['identity', 'storage', 'alarms', 'scripting', 'offscreen', 'activeTab'],
     optional_permissions: ['clipboardWrite'],
     host_permissions: ['https://gmail.googleapis.com/*'],
     optional_host_permissions: ['https://*/*'],

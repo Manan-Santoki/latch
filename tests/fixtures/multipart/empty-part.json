@@ -1,0 +1,25 @@
+{
+  "id": "msg-empty-part",
+  "threadId": "thread-6",
+  "internalDate": "1700000005000",
+  "payload": {
+    "mimeType": "multipart/mixed",
+    "headers": [
+      { "name": "From", "value": "Empty Service <hi@empty.example>" },
+      { "name": "Subject", "value": "Empty body test" }
+    ],
+    "body": {},
+    "parts": [
+      {
+        "partId": "0",
+        "mimeType": "text/plain",
+        "body": {}
+      },
+      {
+        "partId": "1",
+        "mimeType": "text/html",
+        "body": { "size": 0 }
+      }
+    ]
+  }
+}

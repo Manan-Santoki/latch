@@ -12,11 +12,7 @@ export type SiteAccessMode = 'on_click' | 'selected' | 'all_https';
 export type Appearance = 'system' | 'light' | 'dark';
 
 /** High-level Gmail connection state surfaced in popup/diagnostics (§21). */
-export type ConnectionState =
-  | 'connected'
-  | 'disconnected'
-  | 'reauth_required'
-  | 'error';
+export type ConnectionState = 'connected' | 'disconnected' | 'reauth_required' | 'error';
 
 export interface ConnectionStatus {
   connected: boolean;

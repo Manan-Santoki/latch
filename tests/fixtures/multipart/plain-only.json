@@ -1,0 +1,17 @@
+{
+  "id": "msg-plain-only",
+  "threadId": "thread-1",
+  "internalDate": "1700000000000",
+  "payload": {
+    "mimeType": "text/plain",
+    "headers": [
+      { "name": "From", "value": "Acme Security <security@acme.example>" },
+      { "name": "Subject", "value": "Your verification code" },
+      { "name": "To", "value": "user@example.com" }
+    ],
+    "body": {
+      "size": 100,
+      "data": "WW91ciB2ZXJpZmljYXRpb24gY29kZSBpcyA0ODI5MTMuIEl0IGV4cGlyZXMgaW4gMTAgbWludXRlcy4KCklmIHlvdSBkaWQgbm90IHJlcXVlc3QgdGhpcywgaWdub3JlIHRoaXMgZW1haWwu"
+    }
+  }
+}

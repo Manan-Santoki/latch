@@ -1,12 +1,9 @@
-import { fakeBrowser } from 'wxt/testing/fake-browser';
-import { beforeEach, describe, expect, it } from 'vitest';
-import {
-  getActiveActions,
-  setActiveActions,
-} from '@/src/storage/session';
 import { getSettings, setSettings } from '@/src/storage/local';
 import { DEFAULT_SETTINGS } from '@/src/storage/schemas';
+import { getActiveActions, setActiveActions } from '@/src/storage/session';
 import type { VerificationAction } from '@/src/verification/types';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { fakeBrowser } from 'wxt/testing/fake-browser';
 
 // Smoke test proving the WxtVitest fake-browser harness + storage wrappers work,
 // so the parallel logic agents can rely on it.

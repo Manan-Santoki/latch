@@ -1,0 +1,16 @@
+{
+  "id": "msg-unicode",
+  "threadId": "thread-9",
+  "internalDate": "1700000007000",
+  "payload": {
+    "mimeType": "text/plain",
+    "headers": [
+      { "name": "From", "value": "Service Français <service@francais.example>" },
+      { "name": "Subject", "value": "Vérification 🔐 requise" }
+    ],
+    "body": {
+      "size": 90,
+      "data": "Qm9uam91ciDDqcOpISBWb3RyZSBjb2RlIGRlIHbDqXJpZmljYXRpb24gZXN0IDczODI5MS4g8J-agCDkvaDlpb3kuJbnlYw"
+    }
+  }
+}

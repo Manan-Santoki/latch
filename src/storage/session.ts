@@ -20,9 +20,7 @@ export async function getActiveActions(): Promise<VerificationAction[]> {
   return parsed.success ? (parsed.data as VerificationAction[]) : [];
 }
 
-export async function setActiveActions(
-  actions: VerificationAction[],
-): Promise<void> {
+export async function setActiveActions(actions: VerificationAction[]): Promise<void> {
   await chrome.storage.session.set({ [SESSION_KEYS.activeActions]: actions });
 }
 

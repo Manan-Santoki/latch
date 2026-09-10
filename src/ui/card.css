@@ -1,0 +1,273 @@
+/**
+ * Latch — verification card styles (§17.2). Plain CSS on top of the custom
+ * properties in tokens.css. No Tailwind, no CSS-in-JS.
+ */
+
+.latch-card {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 360px;
+  background: var(--latch-bg);
+  color: var(--latch-text);
+  border: 1px solid var(--latch-border);
+  border-radius: var(--latch-radius);
+  box-shadow: var(--latch-shadow);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+  overflow: hidden;
+}
+
+.latch-card *,
+.latch-card *::before,
+.latch-card *::after {
+  box-sizing: border-box;
+}
+
+.latch-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 10px 8px 14px;
+}
+
+.latch-card-header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--latch-text);
+}
+
+.latch-card-header-title span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.latch-card-header-icon {
+  flex: none;
+  color: var(--latch-accent);
+}
+
+.latch-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 2px 16px 12px;
+}
+
+.latch-card-footer {
+  padding: 6px 16px 14px;
+  font-size: 12px;
+  color: var(--latch-text-muted);
+}
+
+/* Shared block labels/titles */
+
+.latch-label {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--latch-text-muted);
+}
+
+.latch-title {
+  margin: 0 0 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--latch-text);
+}
+
+/* Code block (§3.2) */
+
+.latch-code-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--latch-code-bg);
+  border-radius: var(--latch-radius-sm);
+  padding: 10px 10px 10px 14px;
+}
+
+.latch-code-display {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--latch-text);
+  overflow-wrap: anywhere;
+}
+
+/* Link block (§3.3) */
+
+.latch-link-action .latch-hostname {
+  margin: 0 0 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--latch-text);
+  overflow-wrap: anywhere;
+}
+
+/* Combined code + link divider (§3.4) */
+
+.latch-divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--latch-text-muted);
+}
+
+.latch-divider::before,
+.latch-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--latch-divider);
+}
+
+/* Risk warning (§3.5) */
+
+.latch-risk {
+  border: 1px solid var(--latch-caution-border);
+  background: var(--latch-caution-bg);
+  color: var(--latch-caution-text);
+  border-radius: var(--latch-radius-sm);
+  padding: 12px 14px;
+}
+
+.latch-risk--blocked {
+  border-color: var(--latch-blocked-border);
+  background: var(--latch-blocked-bg);
+  color: var(--latch-blocked-text);
+}
+
+.latch-risk-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 6px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.latch-risk-sub,
+.latch-risk-hostname {
+  margin: 0 0 6px;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.latch-risk-reasons {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  font-size: 12px;
+}
+
+.latch-risk-reasons li {
+  margin: 2px 0;
+}
+
+/* Buttons */
+
+.latch-btn {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--latch-transition), border-color var(--latch-transition), color
+    var(--latch-transition);
+}
+
+.latch-btn--primary {
+  background: var(--latch-accent);
+  color: var(--latch-accent-text);
+}
+
+.latch-btn--primary:hover {
+  background: var(--latch-accent-hover);
+}
+
+.latch-btn--primary.latch-btn--copied {
+  background: var(--latch-success);
+  color: var(--latch-success-text);
+}
+
+.latch-btn--secondary {
+  background: var(--latch-secondary-bg);
+  color: var(--latch-secondary-text);
+  border-color: var(--latch-border);
+}
+
+.latch-btn--secondary:hover {
+  background: var(--latch-secondary-bg-hover);
+}
+
+.latch-btn--warning {
+  background: var(--latch-caution-border);
+  color: #1f2937;
+}
+
+.latch-btn--warning:hover {
+  filter: brightness(1.05);
+}
+
+.latch-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.latch-icon-btn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--latch-text-muted);
+  width: 28px;
+  height: 28px;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color var(--latch-transition-fast), color var(--latch-transition-fast);
+}
+
+.latch-icon-btn:hover {
+  background: var(--latch-secondary-bg);
+  color: var(--latch-text);
+}
+
+.latch-btn:focus-visible,
+.latch-icon-btn:focus-visible {
+  outline: 2px solid var(--latch-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Narrow window fallback (§17.1, §17.2) */
+@media (max-width: 400px) {
+  .latch-card {
+    max-width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .latch-btn,
+  .latch-icon-btn {
+    transition: none;
+  }
+}

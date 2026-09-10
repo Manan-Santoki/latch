@@ -19,13 +19,7 @@ export type VerificationActionType =
 
 export type RiskLevel = 'normal' | 'caution' | 'blocked';
 
-export type ActionState =
-  | 'detected'
-  | 'shown'
-  | 'copied'
-  | 'opened'
-  | 'dismissed'
-  | 'expired';
+export type ActionState = 'detected' | 'shown' | 'copied' | 'opened' | 'dismissed' | 'expired';
 
 export interface ActionCode {
   /** Human display form, may contain spaces/hyphens, e.g. "824 193". */
