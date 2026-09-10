@@ -6,6 +6,8 @@ All notable changes to Latch are documented here. The format is based on
 
 ## [Unreleased]
 
+## [0.1.0] — 2026-09-10
+
 ### Added
 - Initial local-first Chrome (Manifest V3) extension: Gmail read-only sync, local detection
   of OTP codes and verification/magic links, and a secure top-right overlay.
@@ -18,6 +20,9 @@ All notable changes to Latch are documented here. The format is based on
   form submit, verify-button click, connect, or popup open) the worker polls every ~6s for
   ~2 minutes, then reverts to the 30s alarm baseline.
 - Developer harness in the popup to exercise the overlay/permission flow without Gmail.
+- Minimal, theme-aware UI (light/dark) across the popup, overlay, and options page,
+  and a branded mail-cursor extension icon.
 - Docs: privacy design, threat model, Google OAuth setup, testing, Chrome Web Store notes.
 
-[Unreleased]: https://github.com/Manan-Santoki/latch/commits/master
+[Unreleased]: https://github.com/Manan-Santoki/latch/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/Manan-Santoki/latch/releases/tag/v0.1.0
