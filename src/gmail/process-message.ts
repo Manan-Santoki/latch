@@ -10,7 +10,6 @@ import { buildAction, routeAction } from '../actions/action-router';
 import { isProcessed, markProcessed } from '../actions/dedupe';
 import { parseEmailHtml } from '../browser/html-parser';
 import { messageDigest } from '../security/hashing';
-import { logger } from '../security/redaction';
 import { MAX_RELEVANT_MESSAGE_AGE_MS } from '../shared/constants';
 import { now } from '../shared/time';
 import { detectVerificationEvent } from '../verification/detect';
@@ -52,10 +51,6 @@ export async function processGmailMessage(
   };
 
   const event = detectVerificationEvent(email);
-  logger.info(
-    `msg plain=${email.plainText.length} html=${email.htmlText.length} ` +
-      `links=${email.links.length} event=${event ? event.type : 'none'}`,
-  );
   if (!event) {
     await markProcessed(digest, nowMs);
     return 'no_event';

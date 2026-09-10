@@ -1,0 +1,29 @@
+name: Feature request
+description: Suggest an idea for Latch
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Latch is deliberately local-first with a narrow purpose. Please check the "Key
+        architectural decisions" in `verification-assistant-plan.md` and `CONTRIBUTING.md`
+        before proposing changes that add a backend, remote processing, or broad permissions.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What are you trying to do that's hard today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false

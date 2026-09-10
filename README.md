@@ -2,6 +2,10 @@
 
 > Surface recent Gmail verification codes and links on the site where you need them.
 
+[![CI](https://github.com/Manan-Santoki/latch/actions/workflows/ci.yml/badge.svg)](https://github.com/Manan-Santoki/latch/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+![Chrome MV3](https://img.shields.io/badge/Chrome-Manifest%20V3-1a73e8)
+
 Latch is a local-first Chrome (Manifest V3) extension. It connects to your Gmail with
 explicit **read-only** authorization, watches for newly-arrived verification email, and —
 entirely **in your browser** — detects one-time codes (OTPs) and verification / magic
@@ -92,5 +96,19 @@ docs/          privacy, OAuth setup, threat model, store, testing
 
 ## Security
 
-Report suspected vulnerabilities to `<SECURITY-CONTACT-PLACEHOLDER>`. Do not include working
-exploit steps in a public issue.
+Latch handles authentication material (OTPs, verification links). The design keeps it inside
+the extension and off the network — see [`docs/THREAT-MODEL.md`](docs/THREAT-MODEL.md) and
+[`docs/PRIVACY-DESIGN.md`](docs/PRIVACY-DESIGN.md). To report a vulnerability, follow
+[`SECURITY.md`](SECURITY.md) — please don't open a public issue with a working exploit.
+
+## Contributing
+
+Contributions are welcome — see [`CONTRIBUTING.md`](CONTRIBUTING.md) for setup, tests, and the
+PR checklist. All code runs through `pnpm typecheck`, `pnpm test`, and `pnpm lint` in CI.
+
+## License
+
+[MIT](LICENSE) © Manan Santoki.
+
+Latch is an independent project and is not affiliated with or endorsed by Google. "Gmail" is a
+trademark of Google LLC.
