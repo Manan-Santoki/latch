@@ -11,7 +11,11 @@
  */
 
 export default defineContentScript({
-  matches: ['https://*/*'],
+  // Empty matches on purpose: this is registered at RUNTIME (see
+  // src/browser/trigger-registration.ts) only for the origins the user granted,
+  // via the optional host permission. Declaring matches here would leak
+  // `https://*/*` into required host_permissions and break the optional model.
+  matches: [],
   registration: 'runtime',
   runAt: 'document_idle',
   allFrames: false,
