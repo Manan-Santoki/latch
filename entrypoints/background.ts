@@ -141,10 +141,17 @@ async function pollGmail(): Promise<void> {
     }
 
     const accountId = sync.accountEmail ?? 'me';
+    const outcomes: string[] = [];
     for (const id of ids) {
       const msg = await getMessage(token, id);
-      await processGmailMessage(msg, accountId);
+      outcomes.push(await processGmailMessage(msg, accountId));
     }
+    logger.info(
+      `poll fetched=${ids.length} recovery=${scan.needsRecovery} ` +
+        `routed=${outcomes.filter((o) => o === 'routed').length} ` +
+        `noEvent=${outcomes.filter((o) => o === 'no_event').length} ` +
+        `skipped=${outcomes.filter((o) => o === 'skipped').length}`,
+    );
 
     await setGmailSync({
       historyId: newHistoryId,
@@ -217,10 +224,17 @@ async function connectGmail(): Promise<ConnectionStatus> {
 async function initialScan(token: string, accountId: string): Promise<void> {
   try {
     const ids = await listRecentInboxIds(token, 15);
+    const outcomes: string[] = [];
     for (const id of ids) {
       const msg = await getMessage(token, id);
-      await processGmailMessage(msg, accountId);
+      outcomes.push(await processGmailMessage(msg, accountId));
     }
+    logger.info(
+      `initial scan fetched=${ids.length} ` +
+        `routed=${outcomes.filter((o) => o === 'routed').length} ` +
+        `noEvent=${outcomes.filter((o) => o === 'no_event').length} ` +
+        `skipped=${outcomes.filter((o) => o === 'skipped').length}`,
+    );
   } catch (err) {
     logger.warn('initial scan failed', sanitizeError(err));
   }

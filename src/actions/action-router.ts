@@ -18,6 +18,7 @@ import {
   shouldAutoOverlay,
 } from '../matching/score-site-match';
 import { inferService } from '../matching/service';
+import { logger } from '../security/redaction';
 import { DEFAULT_ACTION_TTL_MS } from '../shared/constants';
 import { now } from '../shared/time';
 import { getSettings } from '../storage/local';
@@ -84,6 +85,7 @@ export async function routeAction(action: VerificationAction, event: DetectedEve
   if (!active) {
     await putAction(action);
     await refreshBadge();
+    logger.info(`route: ${action.type} stored, no readable active site → badge`);
     return;
   }
 
@@ -98,15 +100,19 @@ export async function routeAction(action: VerificationAction, event: DetectedEve
 
   const settings = await getSettings();
   const allowed = await canAutoInject(active.site.origin, settings.siteMode);
-  if (
+  const inject =
     settings.overlayEnabled &&
     allowed &&
     routed.risk.level !== 'blocked' &&
-    shouldAutoOverlay(match, total)
-  ) {
+    shouldAutoOverlay(match, total);
+  if (inject) {
     await associateTab(active.tabId, routed.id);
     await injectOverlay(active.tabId);
     await refreshOverlay(active.tabId);
   }
   await refreshBadge();
+  logger.info(
+    `route: ${routed.type} stored matchLevel=${match.level} siteScore=${match.score} ` +
+      `total=${total} risk=${routed.risk.level} mode=${settings.siteMode} injected=${inject}`,
+  );
 }

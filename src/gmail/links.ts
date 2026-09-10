@@ -60,6 +60,44 @@ export function extractPlainTextLinks(text: string): ExtractedLink[] {
 // verification-link matching and not worth surfacing to scorers.
 const SKIPPED_ANCHOR_SCHEMES = new Set(['mailto:', 'tel:']);
 
+/** Matches `<a … href="URL" …>TEXT</a>` — capture the href and inner text. */
+const ANCHOR_RE = /<a\b[^>]*?\bhref\s*=\s*["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+
+function stripTags(html: string): string {
+  return html
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
+ * Regex-based anchor extraction from a raw HTML string, used in the service
+ * worker as a fallback when the offscreen DOM parser is unavailable (§13). Keeps
+ * the href verbatim and derives a tag-stripped anchor + surrounding text so links
+ * score the same way the DOM path would. Skips mailto:/tel:.
+ */
+export function extractAnchorsFromHtml(html: string): ExtractedLink[] {
+  if (!html) return [];
+  const links: ExtractedLink[] = [];
+  for (const match of html.matchAll(ANCHOR_RE)) {
+    const href = match[1];
+    if (href === undefined) continue;
+    const scheme = href
+      .trim()
+      .slice(0, href.indexOf(':') + 1)
+      .toLowerCase();
+    if (SKIPPED_ANCHOR_SCHEMES.has(scheme)) continue;
+
+    const anchorText = stripTags(match[2] ?? '');
+    const start = match.index ?? 0;
+    const surroundingText = stripTags(windowAround(html, start, start + match[0].length));
+    links.push(buildLink(href, anchorText, surroundingText));
+  }
+  return links;
+}
+
 /**
  * Extract every `<a href>` from an already-parsed, passive Document (built via
  * `new DOMParser().parseFromString(html, 'text/html')`). Anchors with

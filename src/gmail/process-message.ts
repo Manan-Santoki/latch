@@ -14,6 +14,7 @@ import { MAX_RELEVANT_MESSAGE_AGE_MS } from '../shared/constants';
 import { now } from '../shared/time';
 import { detectVerificationEvent } from '../verification/detect';
 import { decodeInternalDate } from './headers';
+import { extractAnchorsFromHtml, extractPlainTextLinks } from './links';
 import { parseGmailMessage } from './mime';
 import type { GmailMessage } from './types';
 
@@ -38,8 +39,14 @@ export async function processGmailMessage(
   const htmlParse = raw.htmlText.trim()
     ? await parseEmailHtml(raw.htmlText)
     : { text: '', links: [] };
+  // Fallback (§13): also regex-extract href URLs directly from the raw HTML in
+  // the worker, so an HTML-only verification email's link is still found if the
+  // offscreen parser is unavailable. parseGmailMessage dedupes by href.
+  const rawHtmlLinks = raw.htmlText.trim()
+    ? [...extractAnchorsFromHtml(raw.htmlText), ...extractPlainTextLinks(raw.htmlText)]
+    : [];
   const email = {
-    ...parseGmailMessage(msg, htmlParse.links),
+    ...parseGmailMessage(msg, [...htmlParse.links, ...rawHtmlLinks]),
     htmlText: htmlParse.text || raw.htmlText,
   };
 

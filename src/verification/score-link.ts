@@ -70,14 +70,23 @@ function resolveHostname(link: ExtractedLink): string | null {
  * (§13.3) — only the hostname already present in the email is read.
  */
 export function scoreLink(link: ExtractedLink): { score: number; risk: ActionRisk } {
-  const text = `${link.anchorText}\n${link.surroundingText}`;
+  const anchor = link.anchorText ?? '';
+  const text = `${anchor}\n${link.surroundingText ?? ''}`;
   let score = 0;
 
+  let anchorHasStrongPositive = false;
   for (const signal of POSITIVE_SIGNALS) {
     if (signal.regex.test(text)) score += signal.weight;
+    if (signal.weight >= 5 && signal.regex.test(anchor)) anchorHasStrongPositive = true;
   }
+
+  // Negatives describe a link's OWN purpose (unsubscribe/footer/marketing). When
+  // the anchor is itself a clear verification action, restrict negatives to the
+  // anchor so an ADJACENT footer link captured in surroundingText can't disqualify
+  // it (e.g. a "Verify email" button sitting next to an "Unsubscribe" link).
+  const negativeText = anchorHasStrongPositive ? anchor : text;
   for (const signal of NEGATIVE_SIGNALS) {
-    if (signal.regex.test(text)) score += signal.weight;
+    if (signal.regex.test(negativeText)) score += signal.weight;
   }
 
   const reasons: string[] = [];
