@@ -31,6 +31,19 @@ export const CLEANUP_ALARM_PERIOD_MIN = 1;
 export const ALARM_POLL = 'latch:poll';
 export const ALARM_CLEANUP = 'latch:cleanup';
 
+/**
+ * Fast-poll burst (§9.2 adaptive cadence). Chrome alarms can't fire faster than
+ * 30s, so when a verification email is likely imminent (a login/verify form
+ * submit or verify-button click on a granted site, connecting Gmail, or opening
+ * the popup) the worker polls every FAST_POLL_MS for BURST_DURATION_MS, then
+ * reverts to the 30s alarm baseline.
+ */
+export const FAST_POLL_MS = 6000;
+export const BURST_DURATION_MS = 2 * 60 * 1000;
+
+/** Runtime-registered content-script id for the "verification likely" trigger. */
+export const TRIGGER_SCRIPT_ID = 'latch-trigger';
+
 /** Truncated exponential backoff bounds for Gmail 429/5xx (§9.5). */
 export const BACKOFF_BASE_MS = 1000;
 export const BACKOFF_MAX_MS = 5 * 60 * 1000;

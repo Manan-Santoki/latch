@@ -37,7 +37,10 @@ export type ExtensionMessage =
   | { type: 'SET_SITE_MODE'; mode: SiteAccessMode }
   | { type: 'GET_SETTINGS' }
   | { type: 'SET_SETTINGS'; patch: Partial<Settings> }
-  | { type: 'DEV_INJECT_FAKE_ACTION'; fixtureId?: string; tabId?: number };
+  | { type: 'DEV_INJECT_FAKE_ACTION'; fixtureId?: string; tabId?: number }
+  // Hint that a verification email is likely imminent (form submit / verify click /
+  // popup open / just connected) → background starts a fast-poll burst.
+  | { type: 'SCAN_NOW' };
 
 export type MessageType = ExtensionMessage['type'];
 
@@ -56,6 +59,7 @@ export interface ResponseMap {
   GET_SETTINGS: Settings;
   SET_SETTINGS: Settings;
   DEV_INJECT_FAKE_ACTION: OkResult;
+  SCAN_NOW: OkResult;
 }
 
 export type ResponseFor<T extends MessageType> = ResponseMap[T];
@@ -79,6 +83,7 @@ export const extensionMessageSchema = z.discriminatedUnion('type', [
     fixtureId: z.string().optional(),
     tabId: z.number().optional(),
   }),
+  z.object({ type: z.literal('SCAN_NOW') }),
 ]);
 
 // The overlay cross-frame channel lives in a zod-free module so the injected

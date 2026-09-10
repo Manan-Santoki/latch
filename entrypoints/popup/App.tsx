@@ -151,6 +151,8 @@ function App() {
     void loadConnection();
     void loadActions();
     void loadSettings();
+    // Opening the popup means the user is looking for a code now — poll fast.
+    void sendMessage({ type: 'SCAN_NOW' }).catch(() => {});
     void (async () => {
       const origin = await getCurrentTabOrigin();
       setCurrentOrigin(origin);

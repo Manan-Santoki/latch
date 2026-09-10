@@ -16,6 +16,7 @@ import { getActiveTab } from '@/src/browser/active-tab';
 import { clearBadge, updateBadge } from '@/src/browser/badges';
 import { copyActionCode } from '@/src/browser/clipboard';
 import { injectOverlay, refreshOverlay, removeOverlay } from '@/src/browser/overlay';
+import { syncTriggerRegistration } from '@/src/browser/trigger-registration';
 import { type FixtureId, createFakeAction } from '@/src/dev/fixtures';
 import { getMessage, getProfile, listRecentInboxIds } from '@/src/gmail/client';
 import { processGmailMessage } from '@/src/gmail/process-message';
@@ -26,7 +27,9 @@ import { isAllowedForOneClick } from '@/src/security/url-policy';
 import {
   ALARM_CLEANUP,
   ALARM_POLL,
+  BURST_DURATION_MS,
   CLEANUP_ALARM_PERIOD_MIN,
+  FAST_POLL_MS,
   POLL_ALARM_PERIOD_MIN,
 } from '@/src/shared/constants';
 import { now } from '@/src/shared/time';
@@ -59,9 +62,13 @@ export default defineBackground(() => {
     void clearTab(tabId);
   });
 
-  // Revoking website access removes any overlays we are currently showing.
+  // Keep the trigger content script registered to match granted sites.
+  chrome.permissions.onAdded.addListener(() => {
+    void syncTriggerRegistration();
+  });
   chrome.permissions.onRemoved.addListener(() => {
     void removeAllOverlays();
+    void syncTriggerRegistration();
   });
 
   // ─── Message router (validated typed protocol, §24) ──────────────────────────
@@ -81,12 +88,48 @@ export default defineBackground(() => {
 async function bootstrap(): Promise<void> {
   await setSettings({}); // persist defaults if unset
   await ensureAlarms();
+  await syncTriggerRegistration();
   await runCleanup();
 }
 
 async function onStartup(): Promise<void> {
   await ensureAlarms();
+  await syncTriggerRegistration();
   await runCleanup();
+}
+
+// ─── Fast-poll burst (§9.2) ──────────────────────────────────────────────────
+// Chrome alarms can't fire faster than 30s, so when a verification email is
+// likely imminent we poll every FAST_POLL_MS for BURST_DURATION_MS using a
+// self-rescheduling loop (kept alive by the polls themselves), then fall back to
+// the 30s alarm. Burst state is in-memory and best-effort.
+let burstUntil = 0;
+let bursting = false;
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function burstLoop(): Promise<void> {
+  try {
+    while (now() < burstUntil) {
+      await pollGmail();
+      const remaining = burstUntil - now();
+      if (remaining <= 0) break;
+      await delay(Math.min(FAST_POLL_MS, remaining));
+    }
+  } finally {
+    bursting = false;
+  }
+}
+
+function startBurst(): void {
+  burstUntil = now() + BURST_DURATION_MS;
+  if (!bursting) {
+    bursting = true;
+    logger.info('fast-poll burst started');
+    void burstLoop();
+  }
 }
 
 async function ensureAlarms(): Promise<void> {
@@ -213,6 +256,7 @@ async function connectGmail(): Promise<ConnectionStatus> {
     await ensureAlarms();
     await initialScan(token, profile.emailAddress);
     await setGmailSync({ lastSuccessfulPollAt: now() });
+    startBurst(); // poll fast for a couple minutes right after connecting
   } catch (err) {
     await setGmailSync({ lastErrorClass: classifyError(err) });
     logger.warn('gmail connect scan failed', sanitizeError(err));
@@ -329,8 +373,15 @@ async function handleMessage(
       // chrome.permissions.request directly. This path only reports current state.
       return { granted: false };
 
-    case 'SET_SITE_MODE':
-      return setSettings({ siteMode: message.mode });
+    case 'SET_SITE_MODE': {
+      const next = await setSettings({ siteMode: message.mode });
+      await syncTriggerRegistration();
+      return next;
+    }
+
+    case 'SCAN_NOW':
+      startBurst();
+      return { ok: true };
 
     case 'GET_SETTINGS':
       return getSettings();
