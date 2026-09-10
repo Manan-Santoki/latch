@@ -10,11 +10,16 @@ import {
   setActionState,
 } from '@/src/actions/action-store';
 import { cleanupExpiredActions } from '@/src/actions/cleanup';
+import { classifyError } from '@/src/auth/auth-errors';
+import { clearAllCachedTokens, getAuthToken, removeCachedToken } from '@/src/auth/google-auth';
 import { getActiveTab } from '@/src/browser/active-tab';
 import { clearBadge, updateBadge } from '@/src/browser/badges';
 import { copyActionCode } from '@/src/browser/clipboard';
 import { injectOverlay, refreshOverlay, removeOverlay } from '@/src/browser/overlay';
 import { type FixtureId, createFakeAction } from '@/src/dev/fixtures';
+import { getMessage, getProfile, listRecentInboxIds } from '@/src/gmail/client';
+import { processGmailMessage } from '@/src/gmail/process-message';
+import { computeBackoffMs, incrementalScan, recoverySync } from '@/src/gmail/sync-engine';
 import { type ExtensionMessage, extensionMessageSchema } from '@/src/messaging/protocol';
 import { logger, sanitizeError } from '@/src/security/redaction';
 import { isAllowedForOneClick } from '@/src/security/url-policy';
@@ -24,9 +29,16 @@ import {
   CLEANUP_ALARM_PERIOD_MIN,
   POLL_ALARM_PERIOD_MIN,
 } from '@/src/shared/constants';
+import { now } from '@/src/shared/time';
 import type { ConnectionStatus } from '@/src/shared/types';
-import { getGmailSync, getSettings, setGmailSync, setSettings } from '@/src/storage/local';
-import { getTabActionMap } from '@/src/storage/session';
+import {
+  clearGmailSync,
+  getGmailSync,
+  getSettings,
+  setGmailSync,
+  setSettings,
+} from '@/src/storage/local';
+import { clearActiveActions, getTabActionMap, setTabActionMap } from '@/src/storage/session';
 import { toActionView } from '@/src/verification/types';
 
 export default defineBackground(() => {
@@ -106,11 +118,123 @@ async function removeAllOverlays(): Promise<void> {
   }
 }
 
-/** Placeholder — Gmail polling is wired in M4 after OAuth setup. */
+/** Incremental Gmail poll (§9.3, §36). Never triggers interactive OAuth. */
 async function pollGmail(): Promise<void> {
   const sync = await getGmailSync();
-  if (!sync.connected) return;
-  // M4: incremental history.list sync → detect → route.
+  if (!sync.connected || !sync.historyId) return;
+  if (sync.backoffUntil !== undefined && now() < sync.backoffUntil) return;
+
+  const token = await getAuthToken(false);
+  if (!token) {
+    await setGmailSync({ reauthRequired: true });
+    return;
+  }
+
+  try {
+    const scan = await incrementalScan(token, sync.historyId);
+    let ids = scan.newMessageIds;
+    let newHistoryId = scan.latestHistoryId;
+    if (scan.needsRecovery) {
+      const rec = await recoverySync(token);
+      ids = rec.newMessageIds;
+      newHistoryId = rec.latestHistoryId;
+    }
+
+    const accountId = sync.accountEmail ?? 'me';
+    for (const id of ids) {
+      const msg = await getMessage(token, id);
+      await processGmailMessage(msg, accountId);
+    }
+
+    await setGmailSync({
+      historyId: newHistoryId,
+      lastSuccessfulPollAt: now(),
+      reauthRequired: false,
+      lastErrorClass: undefined,
+      backoffUntil: undefined,
+      errorCount: 0,
+    });
+  } catch (err) {
+    await handleGmailError(err, token);
+  }
+}
+
+async function handleGmailError(err: unknown, token: string): Promise<void> {
+  const kind = classifyError(err);
+  logger.warn('gmail poll error', kind);
+  if (kind === 'unauthorized') {
+    await removeCachedToken(token);
+    const retry = await getAuthToken(false);
+    if (!retry) {
+      await setGmailSync({ reauthRequired: true, lastErrorClass: 'unauthorized' });
+    } else {
+      await setGmailSync({ lastErrorClass: undefined });
+    }
+    return;
+  }
+  if (kind === 'forbidden') {
+    await setGmailSync({ lastErrorClass: 'forbidden' });
+    return;
+  }
+  // rate_limited / server / other → truncated exponential backoff (§9.5).
+  const sync = await getGmailSync();
+  const attempt = sync.errorCount ?? 0;
+  await setGmailSync({
+    errorCount: attempt + 1,
+    backoffUntil: now() + computeBackoffMs(attempt),
+    lastErrorClass: kind,
+  });
+}
+
+async function connectGmail(): Promise<ConnectionStatus> {
+  const token = await getAuthToken(true);
+  if (!token) {
+    await setGmailSync({ reauthRequired: true });
+    return connectionStatus();
+  }
+  try {
+    const profile = await getProfile(token);
+    await setGmailSync({
+      connected: true,
+      accountEmail: profile.emailAddress,
+      historyId: profile.historyId,
+      reauthRequired: false,
+      lastErrorClass: undefined,
+      backoffUntil: undefined,
+      errorCount: 0,
+    });
+    await ensureAlarms();
+    await initialScan(token, profile.emailAddress);
+    await setGmailSync({ lastSuccessfulPollAt: now() });
+  } catch (err) {
+    await setGmailSync({ lastErrorClass: classifyError(err) });
+    logger.warn('gmail connect scan failed', sanitizeError(err));
+  }
+  return connectionStatus();
+}
+
+/** Narrow scan of recent inbox on connect so a code sent just before still shows. */
+async function initialScan(token: string, accountId: string): Promise<void> {
+  try {
+    const ids = await listRecentInboxIds(token, 15);
+    for (const id of ids) {
+      const msg = await getMessage(token, id);
+      await processGmailMessage(msg, accountId);
+    }
+  } catch (err) {
+    logger.warn('initial scan failed', sanitizeError(err));
+  }
+}
+
+async function disconnectGmail(): Promise<void> {
+  const token = await getAuthToken(false);
+  if (token) await removeCachedToken(token);
+  await clearAllCachedTokens();
+  await removeAllOverlays();
+  await clearGmailSync();
+  await clearActiveActions();
+  await setTabActionMap({});
+  await clearBadge();
 }
 
 // ─── Handlers ──────────────────────────────────────────────────────────────────
@@ -148,16 +272,10 @@ async function handleMessage(
       return connectionStatus();
 
     case 'CONNECT_GMAIL':
-      // Real interactive OAuth is wired in M3/M4; for now report current state.
-      return connectionStatus();
+      return connectGmail();
 
     case 'DISCONNECT_GMAIL':
-      await setGmailSync({
-        connected: false,
-        accountEmail: undefined,
-        historyId: undefined,
-        reauthRequired: false,
-      });
+      await disconnectGmail();
       return { ok: true };
 
     case 'GET_ACTIVE_ACTION': {

@@ -42,6 +42,10 @@ export const gmailSyncStateSchema = z.object({
   lastSuccessfulPollAt: z.number().optional(),
   reauthRequired: z.boolean().default(false),
   lastErrorClass: z.string().optional(),
+  /** Skip polling until this epoch-ms (truncated exponential backoff, §9.5). */
+  backoffUntil: z.number().optional(),
+  /** Consecutive error count driving the backoff. */
+  errorCount: z.number().optional(),
 });
 export type GmailSyncState = z.infer<typeof gmailSyncStateSchema>;
 export const DEFAULT_GMAIL_SYNC_STATE: GmailSyncState = gmailSyncStateSchema.parse({});

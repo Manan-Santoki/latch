@@ -9,39 +9,17 @@
  */
 
 import { getAction } from '../actions/action-store';
-import { OFFSCREEN_TARGET, OFFSCREEN_URL, type OffscreenCopyMessage } from './offscreen-protocol';
-
-async function hasOffscreenDocument(): Promise<boolean> {
-  // getContexts is available in Chrome 116+ (our minimum).
-  const contexts = await chrome.runtime.getContexts({
-    contextTypes: ['OFFSCREEN_DOCUMENT' as chrome.runtime.ContextType],
-  });
-  return contexts.length > 0;
-}
-
-async function ensureOffscreen(): Promise<void> {
-  if (await hasOffscreenDocument()) return;
-  try {
-    await chrome.offscreen.createDocument({
-      url: OFFSCREEN_URL,
-      reasons: ['CLIPBOARD' as chrome.offscreen.Reason],
-      justification: 'Copy a verification code to the clipboard on user request.',
-    });
-  } catch {
-    // A concurrent create may have won the race; that's fine.
-  }
-}
+import { sendToOffscreen } from './offscreen-doc';
+import { OFFSCREEN_TARGET } from './offscreen-protocol';
 
 /** Copy the code for `actionId` to the clipboard. Returns false if no code. */
 export async function copyActionCode(actionId: string): Promise<boolean> {
   const action = await getAction(actionId);
   if (!action?.code) return false;
-  await ensureOffscreen();
-  const message: OffscreenCopyMessage = {
+  const res = await sendToOffscreen<{ ok?: boolean }>({
     target: OFFSCREEN_TARGET,
     op: 'copy',
     text: action.code.copyValue,
-  };
-  const res = (await chrome.runtime.sendMessage(message)) as { ok?: boolean } | undefined;
+  });
   return res?.ok === true;
 }

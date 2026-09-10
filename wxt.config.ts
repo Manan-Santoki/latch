@@ -1,5 +1,13 @@
 import { defineConfig } from 'wxt';
 
+// Load .env into process.env so the manifest can read WXT_GOOGLE_CLIENT_ID here in
+// the Node config context (Vite only exposes it to extension code, not here).
+try {
+  process.loadEnvFile('.env');
+} catch {
+  // No .env (e.g. CI/first run) — fall back to the placeholder below.
+}
+
 // See https://wxt.dev/api/config.html
 //
 // Latch — Chrome MV3 extension manifest configuration.
