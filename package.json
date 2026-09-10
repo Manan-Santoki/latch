@@ -1,0 +1,47 @@
+{
+  "name": "latch",
+  "displayName": "Latch",
+  "description": "Surface recent Gmail verification codes and links on the site where you need them.",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "wxt",
+    "build": "wxt build",
+    "zip": "wxt zip",
+    "compile": "tsc --noEmit",
+    "typecheck": "wxt prepare && tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "e2e": "playwright test",
+    "postinstall": "wxt prepare"
+  },
+  "dependencies": {
+    "lucide-react": "^0.468.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "tldts": "^6.1.64",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@playwright/test": "^1.49.1",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/chrome": "^0.0.287",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@wxt-dev/module-react": "^1.1.5",
+    "happy-dom": "^15.11.7",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.0",
+    "web-ext": "^10.5.0",
+    "wxt": "^0.21.4"
+  }
+}
