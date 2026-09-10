@@ -54,7 +54,7 @@ const POSITIVE_SIGNALS: LocatedSignal[] = [
   { label: 'verify_email', regex: /\bverify email\b/i, subjectWeight: 5, bodyWeight: 4 },
   {
     label: 'confirm_your_email',
-    regex: /\bconfirm your email\b/i,
+    regex: /\bconfirm (this is )?your email\b/i,
     subjectWeight: 6,
     bodyWeight: 4,
   },
@@ -64,6 +64,24 @@ const POSITIVE_SIGNALS: LocatedSignal[] = [
     regex: /\bconfirm (your )?account\b/i,
     subjectWeight: 5,
     bodyWeight: 4,
+  },
+  {
+    label: 'confirm_email_address',
+    regex: /\b(confirm|verify) (that )?(this is )?your email address\b/i,
+    subjectWeight: 5,
+    bodyWeight: 4,
+  },
+  {
+    label: 'verify_your_account',
+    regex: /\bverify your (?:[\w'-]+ )?account\b/i,
+    subjectWeight: 5,
+    bodyWeight: 4,
+  },
+  {
+    label: 'finish_account_setup',
+    regex: /\bfinish (setting up|creating) your account\b/i,
+    subjectWeight: 3,
+    bodyWeight: 3,
   },
   { label: 'security_code', regex: /\bsecurity code\b/i, subjectWeight: 5, bodyWeight: 3 },
   { label: 'confirmation_code', regex: /\bconfirmation code\b/i, subjectWeight: 5, bodyWeight: 3 },

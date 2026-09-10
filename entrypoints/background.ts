@@ -38,6 +38,7 @@ import {
   clearGmailSync,
   getGmailSync,
   getSettings,
+  setDedupe,
   setGmailSync,
   setSettings,
 } from '@/src/storage/local';
@@ -292,6 +293,7 @@ async function disconnectGmail(): Promise<void> {
   await clearGmailSync();
   await clearActiveActions();
   await setTabActionMap({});
+  await setDedupe([]); // Gmail-derived; clearing lets a reconnect re-evaluate recent mail.
   await clearBadge();
 }
 

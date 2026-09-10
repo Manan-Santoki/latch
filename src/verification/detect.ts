@@ -47,13 +47,23 @@ function linkActionType(anchorText: string): VerificationActionType {
  * When both a code and a link are present, the code is preferred as the primary
  * `type` ('otp_code') but the link is still attached (§3.4 "both" case).
  */
+// A link whose own anchor is a clear verify/confirm/activate action is strong
+// evidence; when present it lets an email with weaker body wording still qualify,
+// provided there is at least some verification wording (INTENT_FLOOR) — keeping
+// false positives low.
+const STRONG_LINK_SCORE = 10;
+const INTENT_FLOOR = 3;
+
 export function detectVerificationEvent(email: ParsedEmail): DetectedEvent | null {
   const classification = classifyMessage(email);
-  if (!classification.isVerification) return null;
-
   const codeCandidate = extractCode(email);
   const linkCandidates = extractVerificationLinks(email);
   const bestLink = linkCandidates[0];
+
+  const strongLink = bestLink !== undefined && bestLink.score >= STRONG_LINK_SCORE;
+  const isVerification =
+    classification.isVerification || (classification.intentScore >= INTENT_FLOOR && strongLink);
+  if (!isVerification) return null;
 
   let type: VerificationActionType;
   let actionScore: number;
